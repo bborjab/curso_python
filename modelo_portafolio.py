@@ -1,0 +1,122 @@
+from typing import List, Optional
+
+from sqlalchemy import BigInteger, Boolean, CHAR, Computed, DECIMAL, DateTime, ForeignKeyConstraint, Identity, Index, Integer, NCHAR, Numeric, PrimaryKeyConstraint, SmallInteger, String, Unicode, text
+from sqlalchemy.dialects.mssql import IMAGE
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
+import datetime
+import decimal
+
+class Base(DeclarativeBase):
+    pass
+
+class TblPortafolioDeTitulosPorDias(Base):
+    __tablename__ = 'tblPortafolioDeTitulosPorDias'
+    __table_args__ = (
+        ForeignKeyConstraint(['intIDEspecie'], ['tblEspeciesHijas.intIDEspecie'], onupdate='CASCADE', name='FK_tblPortafolioDeTitulosPorDias_tblEspeciesHijas'),
+        ForeignKeyConstraint(['vchClasificacionInversion'], ['tblClasificacionInversiones.vchClasificacionInversion'], name='FK_tblPortafolioDeTitulosPorDias_tblClasificacionInversiones'),
+        ForeignKeyConstraint(['vchCodigoPortafolio'], ['tblPropietarios.vchCodigoPortafolio'], name='FK_tblPortafolioDeTitulosPorDias_tblPropietarios'),
+        PrimaryKeyConstraint('datFechaAct', 'vchCodigoPortafolio', 'vchCodigoTitulo', name='PK_tblPortafolioDeTitulosPorDias'),
+        Index('IDX_tblPortafolioDeTitulosPorDias_05102015', 'intConsecutivoOperacion'),
+        Index('NCI_tblPortafolioDeTitulosPorDias_FechaAct_CodigoTitulo_Clasificacion_Garantia_Sim_Estado', 'datFechaAct', 'vchCodigoTitulo', 'vchClasificacion', 'vchTipoGarantia', 'chrTipoSIM', 'chrEstado'),
+        Index('NCI_tblPortafolioDeTitulosPorDias_FechaCompra_Portafolio_Titulo', 'datFechaCompra', 'vchCodigoPortafolio', 'vchCodigoTitulo'),
+        Index('NCI_tblPortafolioDeTitulosPorDias_Portafolio_Estado', 'vchCodigoPortafolio', 'chrEstado'),
+        Index('UCI_tblPortafolioDeTitulosPorDias_ClavePrincipal', 'intIdClavePortafolio', unique=True)
+    )
+
+    datFechaAct: Mapped[datetime.datetime] = mapped_column(DateTime, primary_key=True)
+    vchCodigoPortafolio: Mapped[str] = mapped_column(String(15, 'SQL_Latin1_General_CP1_CI_AS'), primary_key=True)
+    vchCodigoTitulo: Mapped[str] = mapped_column(String(30, 'SQL_Latin1_General_CP1_CI_AS'), primary_key=True)
+    intIdClavePortafolio: Mapped[int] = mapped_column(BigInteger, Identity(start=1, increment=1))
+    intIDEspecie: Mapped[Optional[int]] = mapped_column(Integer)
+    vchClasificacion: Mapped[Optional[str]] = mapped_column(String(1, 'SQL_Latin1_General_CP1_CI_AS'))
+    vchTipoGarantia: Mapped[Optional[str]] = mapped_column(String(10, 'SQL_Latin1_General_CP1_CI_AS'))
+    chrTipoSIM: Mapped[Optional[str]] = mapped_column(CHAR(1, 'SQL_Latin1_General_CP1_CI_AS'))
+    datFechaCompra: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    datFechaCompromiso: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    datFechaCumplimiento: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    numValorNominal: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numValorCompra: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numValorComision: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numValorComisionIva: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numMargen: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6), server_default=text('(0)'))
+    numVPNMercadoAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numVPNMercado: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTIRDeVPN: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(18, 6))
+    numAjusteAVAL: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numValorLinealAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numValorLineal: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numAjusteATIR: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTIRCompraAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6), server_default=text('(0)'))
+    numTIRCompra: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6), server_default=text('(0)'))
+    numRendimientos: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalAjustesAVPNAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalAjustesAVPN: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalAjustesATIRAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalAjustesATIR: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalRendimientosAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalRendimientos: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numIngresoPorDia: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalIngresoAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalIngreso: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numGastoPorDia: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalGastoAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numTotalGasto: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numDuracion: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(18, 10), server_default=text('(0)'))
+    numVAR: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    numVARTasa: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    numVARUnidad: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    numInteresFondeo: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(18, 6), server_default=text('(0)'))
+    numValorFondeo: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    vchCodComisionista: Mapped[Optional[str]] = mapped_column(String(40, 'SQL_Latin1_General_CP1_CI_AS'))
+    intConsecutivoOperacion: Mapped[Optional[int]] = mapped_column(Integer)
+    chrEstado: Mapped[Optional[str]] = mapped_column(CHAR(1, 'SQL_Latin1_General_CP1_CI_AS'))
+    NumValorPrecio: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(17, 4), server_default=text('(0)'))
+    NumValorTasaDescuento: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(17, 4), server_default=text('(0)'))
+    vchMetodoValoracion: Mapped[Optional[str]] = mapped_column(String(6, 'SQL_Latin1_General_CP1_CI_AS'))
+    numTasaDescPrevia: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6))
+    intCodDiasVencimiento: Mapped[Optional[int]] = mapped_column(Integer)
+    chrEstadoVigente: Mapped[Optional[str]] = mapped_column(CHAR(1, 'SQL_Latin1_General_CP1_CI_AS'))
+    datFechaLimiteVigencia: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    intGrupoCalificacion: Mapped[Optional[int]] = mapped_column(Integer)
+    intClase: Mapped[Optional[int]] = mapped_column(Integer)
+    numMargenAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6), server_default=text('(0)'))
+    vchMetodoValoracionAnt: Mapped[Optional[str]] = mapped_column(String(6, 'SQL_Latin1_General_CP1_CI_AS'), server_default=text("('M')"))
+    vchCodCentralDeposito: Mapped[Optional[str]] = mapped_column(String(4, 'SQL_Latin1_General_CP1_CI_AS'))
+    numValorPrecioLimpioVPN: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(17, 4), server_default=text('(0)'))
+    numValorPrecioLimpioTIR: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(17, 4), server_default=text('(0)'))
+    numValorPrecioLimpioCompra: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(17, 4), server_default=text('(0)'))
+    numTIRCompraOriginal: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 6), server_default=text('(0)'))
+    vchCodigoTituloOriginal: Mapped[Optional[str]] = mapped_column(String(30, 'SQL_Latin1_General_CP1_CI_AS'))
+    numConvexidad: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(18, 10), server_default=text('(0)'))
+    numVARi: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    numVARUi: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('(0)'))
+    intCodBanda: Mapped[Optional[int]] = mapped_column(Integer, server_default=text('(0)'))
+    numCambioTasaInteres: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(10, 2), server_default=text('(0)'))
+    numSensibilidadTasa: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    numSensibilidadMoneda: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    vchClasificacionInversion: Mapped[Optional[str]] = mapped_column(String(4, 'SQL_Latin1_General_CP1_CI_AS'))
+    numSensibilidadNocional: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2), server_default=text('(0)'))
+    numCalculoSegValoracion: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(17, 4), server_default=text('(0)'))
+    intDiasAlVencimiento: Mapped[Optional[int]] = mapped_column(Integer)
+    datFechaActVal: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    numValorExponencial: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('((0))'))
+    vchTipoActValoracion: Mapped[Optional[str]] = mapped_column(String(3, 'SQL_Latin1_General_CP1_CI_AS'), server_default=text("('TSV')"))
+    vchSesionId: Mapped[Optional[str]] = mapped_column(String(30, 'SQL_Latin1_General_CP1_CI_AS'))
+    numSensibilidadAccion: Mapped[Optional[decimal.Decimal]] = mapped_column(DECIMAL(20, 2))
+    numValorProvision: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('((0))'))
+    numValorTotalProvision: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('((0))'))
+    numValorReversionProvision: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('((0))'))
+    numValorTotalReversionProvision: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2), server_default=text('((0))'))
+    numValorTotalProvisionAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2))
+    numValorTotalReversionProvisionAnt: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2))
+    vchCodigoIdentificacion: Mapped[Optional[str]] = mapped_column(String(30, 'SQL_Latin1_General_CP1_CI_AS'))
+    datFechaCumplimientoC052: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    datFechaFinalC052: Mapped[Optional[datetime.datetime]] = mapped_column(DateTime)
+    numTasaClienteC052: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(11, 8))
+    numTasaFinalC052: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(11, 8))
+    numValorNominal2: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2))
+    numValorNominal3: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2))
+    numValorNominalOriginal: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(20, 2))
+    chrEstadoVigente1: Mapped[Optional[str]] = mapped_column(CHAR(1, 'SQL_Latin1_General_CP1_CI_AS'))
+    numValorPrecioSucioCompra: Mapped[Optional[decimal.Decimal]] = mapped_column(Numeric(18, 4), server_default=text('((0))'))
+    intSecuenciaIngreso: Mapped[Optional[int]] = mapped_column(Integer)

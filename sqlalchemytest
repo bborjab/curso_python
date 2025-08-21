@@ -1,0 +1,23 @@
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from modelo_portafolio import Base, TblPortafolioDeTitulosPorDias
+
+# Crear el engine
+engine = create_engine(
+    "mssql+pyodbc://outsourcing:..2024*/LKAZSE@10.8.0.8/dbServicioValoracionIBR?driver=ODBC+Driver+17+for+SQL+Server"
+)
+
+# Crear sesión
+Session = sessionmaker(bind=engine)
+session = Session()
+
+# Hacer una consulta: obtener los primeros 5 registros
+registros = session.query(TblPortafolioDeTitulosPorDias).limit(5).all()
+
+# Imprimir resultados
+for r in registros:
+    print(f"{r.vchCodigoTitulo} - {r.datFechaAct} - {r.vchCodigoPortafolio}")
+
+# Cerrar sesión
+session.close()
+
